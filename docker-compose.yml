@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  php-apache:
+    image: php:8.2-apache
+    container_name: php-apache
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8000:80"
+    environment:
+      - PHP_MEMORY_LIMIT=512M
+      - COMPOSER_ALLOW_SUPERUSER=1
+    command: >
+      bash -c "
+        chown -R www-data:www-data /var/www/html &&
+        chmod -R 755 /var/www/html &&
+        apache2-foreground
+      "
+
+  composer:
+    image: composer:2.9
+    container_name: composer-cli
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
