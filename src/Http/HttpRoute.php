@@ -4,19 +4,16 @@ namespace Http;
 
 class HttpRoute extends \AbstractHttpRoute
 {
-    // ===========================================================================
-    // Constructor
-    // ===========================================================================
     public function __construct(string $resourceDir)
     {
         $this->resourceDir = $resourceDir;
     }
 
-    // ===========================================================================
-    // Methods
-    // ===========================================================================
+    /**
+     * @throws \Exception
+     */
     public function resolve(Request $request): void
     {
-        // TODO: Implement resolve() method.
+        $this->execute($request->method, $request->uri);
     }
 }

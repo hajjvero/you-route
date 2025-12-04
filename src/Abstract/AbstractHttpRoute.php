@@ -1,12 +1,13 @@
 <?php
 
 use Http\Request;
+use Trait\TraitExecute;
 use Trait\TraitHttpReflection;
 use Trait\TraitRoute;
 
 abstract class AbstractHttpRoute
 {
-    use TraitHttpReflection, TraitRoute;
+    use TraitHttpReflection, TraitRoute, TraitExecute;
 
     /**
      * @var string $resourceDir Le répertoire des ressources

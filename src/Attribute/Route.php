@@ -50,7 +50,7 @@ final class Route
      */
     public function setPath(string $path): void
     {
-        $this->path = !str_ends_with($path,"/") ? $path."/":$path;
+        $this->path = !str_ends_with($path,"/") ? $path."/" : $path;
     }
 
     /**
