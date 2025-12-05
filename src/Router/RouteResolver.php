@@ -1,24 +1,42 @@
 <?php
 
-namespace Trait;
+namespace YouRoute\Router;
 
-use Attribute\Route;
-use Http\Response;
+use YouRoute\Attribute\Route;
+use YouRoute\Http\Response;
+use ReflectionClass;
 use ReflectionException;
-use ReflectionMethod;
+use YouRoute\Router\Abstract\AbstractRouteResolver;
 
-trait TraitRoute
+class RouteResolver extends AbstractRouteResolver
 {
+    public function __construct(private readonly RouteCollection $routeCollection)
+    {}
+
     /**
-     * Prepare route
      * @throws ReflectionException
      */
-    protected function prepareRoute():void
+    public function loadRoutesFromDirectory(string $resourceDir): void
     {
-        //  prepare route pour check class
-        foreach ($this->prepareReflections() as $reflection) {
+        $controllers = $this->loadAllClassNames($resourceDir);
+
+        /**
+         * @var ReflectionClass[] $reflection
+         */
+        $reflections = array_map(static fn($controller) => new ReflectionClass($controller), $controllers);
+        $this->prepareRoute($reflections);
+    }
+
+    /**
+     * @param ReflectionClass[] $reflections
+     * @return void
+     * @throws ReflectionException
+     */
+    private function prepareRoute(array $reflections): void
+    {
+        foreach ($reflections as $reflection) {
             // check si class est abstract
-            if($reflection->getModifiers() === \ReflectionClass::IS_EXPLICIT_ABSTRACT) {
+            if (!$reflection->isInstantiable()) {
                 throw new ReflectionException("The abstract class {$reflection->getName()} not access in system route");
             }
 
@@ -41,7 +59,7 @@ trait TraitRoute
                 $routeMethod->setAction([$method->class, $method->name]);
 
                 // check modifier
-                if ($method->getModifiers() !== ReflectionMethod::IS_PUBLIC) {
+                if (!$method->isPublic()) {
                     throw new ReflectionException("The modifier of {$method->class}::{$method->getName()} not access in system route");
                 }
 
@@ -50,45 +68,9 @@ trait TraitRoute
                     throw new ReflectionException("The return type of {$method->class}::{$method->getName()} not response in system route");
                 }
 
-                // Ajouter route avec prefix si existe
-                $this->addRoute($this->prefix($routeController, $routeMethod));
+                $this->routeCollection->add($this->routeCollection->prefix($routeController, $routeMethod));
             }
         }
     }
 
-    /**
-     * Ajouter route dans la liste des routes
-     * @param Route $route
-     * @return void
-     */
-    protected function addRoute(Route $route):void
-    {
-        // check si plusieurs method
-        if (is_array($route->getMethods()))
-        {
-            foreach ($route->getMethods() as $method) {
-                self::$routes[$method][] = $route;
-            }
-            return;
-        }
-
-        self::$routes[$route->getMethods()][] = $route;
-    }
-
-    /**
-     * Function pour ajouter prefix route
-     * @param Route|null $routeController
-     * @param Route $routeMethod
-     * @return Route
-     */
-    private function prefix(?Route $routeController, Route $routeMethod): Route
-    {
-        // check si prefix route
-        if ($routeController)
-        {
-            $routeMethod->setPath($routeController->getPath().$routeMethod->getPath());
-        }
-
-        return $routeMethod;
-    }
 }

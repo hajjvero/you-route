@@ -1,8 +1,10 @@
 <?php
 
-namespace Http;
+namespace YouRoute\Http;
 
-class Request extends \AbstractRequest
+use YouRoute\Http\Abstract\AbstractRequest;
+
+class Request extends AbstractRequest
 {
     public function getPathInfo():string
     {

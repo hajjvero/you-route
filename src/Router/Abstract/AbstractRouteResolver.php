@@ -1,52 +1,23 @@
 <?php
 
-namespace Trait;
-
-use Exception;
+namespace YouRoute\Router\Abstract;
 use FilesystemIterator;
-use ReflectionClass;
-use ReflectionException;
-use RuntimeException;
 use SplFileInfo;
 
-trait TraitHttpReflection
+abstract class AbstractRouteResolver
 {
-    /**
-     * Prepare les Reflections
-     *
-     * @throws ReflectionException
-     * @throws Exception
-     * @return ReflectionClass[]
-     */
-    protected function prepareReflections():array
-    {
-        $reflections = [];
-        foreach ($this->prepareControllers($this->resourceDir) as $controller)
-        {
-            $reflections[] = new ReflectionClass($controller);
-        }
-        return $reflections;
-    }
-
-    /**
-     * Prépare les chemins des contrôleurs à partir d'un répertoire
-     *
-     * @param string $path Chemin du répertoire à scanner
-     * @return array Liste des noms complets des classes (avec namespace)
-     * @throws RuntimeException Si le répertoire n'existe pas
-     */
-    protected function prepareControllers(string $path):array
+    protected function loadAllClassNames(string $resourceDir): array
     {
         // Vérification de l'existence du répertoire
-        if (!is_dir($path)) {
-            throw new \RuntimeException("Le répertoire '$path' n'existe pas");
+        if (!is_dir($resourceDir)) {
+            throw new \RuntimeException("Le répertoire '$resourceDir' n'existe pas");
         }
 
         $controllers = [];
 
         // Utilisation de RecursiveDirectoryIterator pour une meilleure performance
         $iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+            new \RecursiveDirectoryIterator($resourceDir, FilesystemIterator::SKIP_DOTS),
             \RecursiveIteratorIterator::SELF_FIRST
         );
 
@@ -65,13 +36,7 @@ trait TraitHttpReflection
         return $controllers;
     }
 
-    /**
-     * Extrait le nom complet de la classe (FQCN) d'un fichier PHP
-     *
-     * @param string $filePath Chemin du fichier
-     * @return string|null Le nom complet de la classe ou null si non trouvé
-     */
-    protected function extractFullyQualifiedClassName(string $filePath): ?string
+    private function extractFullyQualifiedClassName(string $filePath): ?string
     {
         $content = file_get_contents($filePath);
 

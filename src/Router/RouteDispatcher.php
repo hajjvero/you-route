@@ -1,19 +1,23 @@
 <?php
 
-namespace Trait;
+namespace YouRoute\Router;
 
 use Exception;
-use Http\Response;
+use YouRoute\Http\Response;
 
-trait TraitExecute
+readonly class RouteDispatcher
 {
+    public function __construct(private RouteCollection $routeCollection)
+    {
+    }
+
     /**
      * @throws Exception
      */
-    protected function execute(string $method, string $url): void
+    public function dispatch(string $method, string $url): void
     {
         // get routes by method of request
-        $routes = self::$routes[$method] ?? [];
+        $routes = $this->routeCollection->all()[$method] ?? [];
 
         // add slash to end of url
         $url = !str_ends_with($url, "/") ? $url . "/" : $url;
@@ -24,7 +28,7 @@ trait TraitExecute
 
             // execute action
             if (is_array($params)) {
-                $this->executeAction($route->getAction(), $params);
+                $this->dispatchAction($route->getAction(), $params);
                 return;
             }
         }
@@ -43,7 +47,7 @@ trait TraitExecute
      * @param string $url URL réelle
      * @return bool|array
      */
-    protected function matchPath(string $pattern, string $url): bool|array
+    private function matchPath(string $pattern, string $url): bool|array
     {
         $patternSegments = explode('/', $pattern);
         $urlSegments = explode('/', $url);
@@ -77,7 +81,7 @@ trait TraitExecute
      * @param array $params
      * @return void
      */
-    protected function executeAction(callable|array $action, array $params): void
+    private function dispatchAction(callable|array $action, array $params): void
     {
         // check callable
         if (is_callable($action)) {

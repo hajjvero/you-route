@@ -1,6 +1,6 @@
 <?php
 
-namespace Attribute;
+namespace YouRoute\Attribute;
 
 #[\Attribute]
 final class Route
