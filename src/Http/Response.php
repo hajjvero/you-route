@@ -1,8 +1,10 @@
 <?php
 
-namespace Http;
+namespace YouRoute\Http;
 
-class Response extends \AbstractResponse
+use YouRoute\Http\Abstract\AbstractResponse;
+
+class Response extends AbstractResponse
 {
     /**
      * Envoyer la réponse au client

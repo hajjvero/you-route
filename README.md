@@ -1,6 +1,6 @@
 # You-Route
 
-You-Route est une bibliothèque de routage PHP légère basée sur les attributs PHP. Elle permet de définir facilement des routes HTTP pour vos applications web en utilisant des annotations PHP modernes.
+You-Route est une bibliothèque de routage PHP légère basée sur les attributs PHP. Elle permet de définir facilement des routes HTTP pour vos applications web en utilisant des attributs PHP modernes.
 
 ## Fonctionnalités
 
@@ -8,7 +8,7 @@ You-Route est une bibliothèque de routage PHP légère basée sur les attributs
 - Support des méthodes HTTP (GET, POST, PUT, DELETE, etc.)
 - Paramètres d'URL dynamiques
 - Intégration facile avec les contrôleurs
-- Support Docker pour le développement
+- Architecture modulaire et extensible
 
 ## Prérequis
 
@@ -56,15 +56,17 @@ class HomeController
 ```php
 <?php
 
-use YouRoute\Http\HttpRoute;
+require_once 'vendor/autoload.php';
+
+use YouRoute\YouRouteKernel;
 use YouRoute\Http\Request;
 
-// Initialiser le routeur
-$routeur = new HttpRoute(__DIR__ . '/src/Controller');
+// Initialiser le kernel
+$kernel = new YouRouteKernel();
 
 // Résoudre la requête
-$request = new Request($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
-$routeur->resolve($request);
+$request = new Request();
+$kernel->run(__DIR__ . '/src/Controller', $request);
 ```
 
 ### 3. Structure du projet
@@ -72,11 +74,22 @@ $routeur->resolve($request);
 ```
 your-project/
 ├── src/
-│   └── Controller/
-│       └── HomeController.php
-├── vendor/
+│   ├── Attribute/
+│   │   └── Route.php
+│   ├── Http/
+│   │   ├── Abstract/
+│   │   │   ├── AbstractRequest.php
+│   │   │   └── AbstractResponse.php
+│   │   ├── Request.php
+│   │   └── Response.php
+│   ├── Router/
+│   │   ├── Abstract/
+│   │   │   └── AbstractRouteResolver.php
+│   │   ├── RouteCollection.php
+│   │   ├── RouteDispatcher.php
+│   │   └── RouteResolver.php
+│   └── YouRouteKernel.php
 ├── composer.json
-└── index.php
 ```
 
 ## Méthodes HTTP supportées
@@ -128,6 +141,28 @@ class ApiController
 ```
 
 Dans cet exemple, les routes seront accessibles via `/api/users` et `/api/users/{id}`.
+
+## Architecture
+
+La bibliothèque suit une architecture modulaire organisée en plusieurs composants principaux :
+
+### Composant Attribute
+- [Route.php](src/Attribute/Route.php) : Définition de l'attribut Route utilisé pour annoter les contrôleurs
+
+### Composant Http
+- [Abstract/AbstractRequest.php](src/Http/Abstract/AbstractRequest.php) : Classe abstraite pour la gestion des requêtes HTTP
+- [Abstract/AbstractResponse.php](src/Http/Abstract/AbstractResponse.php) : Classe abstraite pour la gestion des réponses HTTP
+- [Request.php](src/Http/Request.php) : Implémentation concrète de la requête
+- [Response.php](src/Http/Response.php) : Implémentation concrète de la réponse
+
+### Composant Router
+- [Abstract/AbstractRouteResolver.php](src/Router/Abstract/AbstractRouteResolver.php) : Classe abstraite pour la résolution des routes
+- [RouteCollection.php](src/Router/RouteCollection.php) : Collection et gestion des routes
+- [RouteDispatcher.php](src/Router/RouteDispatcher.php) : Dispatching des requêtes vers les contrôleurs appropriés
+- [RouteResolver.php](src/Router/RouteResolver.php) : Résolution des routes depuis les attributs des classes
+
+### Kernel
+- [YouRouteKernel.php](src/YouRouteKernel.php) : Point d'entrée principal de la bibliothèque
 
 ## Contribution
 

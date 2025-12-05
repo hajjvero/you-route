@@ -1,5 +1,6 @@
 <?php
 
+namespace YouRoute\Http\Abstract;
 abstract class AbstractResponse
 {
     /**

@@ -1,6 +1,6 @@
 {
     "name": "hajjvero/you-route",
-    "description": "Le composant de route définit la route système en fonction de l'attribut PHP",
+    "description": "Bibliothèque de routage PHP légère basée sur les attributs PHP",
     "type": "library",
     "license" : "MIT",
     "homepage": "https://github.com/hajjvero/you-route.git",
@@ -17,7 +17,7 @@
     },
     "autoload": {
         "psr-4": {
-            "YouRoute\\": "/src"
+            "YouRoute\\": "src/"
         }
     },
     "minimum-stability": "stable"

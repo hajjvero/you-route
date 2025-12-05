@@ -1,5 +1,6 @@
 <?php
 
+namespace YouRoute\Http\Abstract;
 abstract class AbstractRequest
 {
     /**
@@ -90,7 +91,7 @@ abstract class AbstractRequest
      * @param mixed $default
      * @return mixed
      */
-    public function getQuery(?string $key = null, mixed $default = null) : mixed
+    public function getQuery(?string $key = null, mixed $default = null): mixed
     {
         if ($key === null) {
             return $this->query;
@@ -106,12 +107,12 @@ abstract class AbstractRequest
      * @param ?mixed $default
      * @return mixed
      */
-    public function getBody(?string $key = null, mixed $default = null) : mixed
+    public function getBody(?string $key = null, mixed $default = null): mixed
     {
         if ($key === null) {
             return $this->body;
         }
-        
+
         return $this->body[$key] ?? $default;
     }
 
@@ -122,7 +123,7 @@ abstract class AbstractRequest
      * @param mixed $default
      * @return mixed
      */
-    public function getHeader(?string $key = null,mixed $default = null) : mixed
+    public function getHeader(?string $key = null, mixed $default = null): mixed
     {
         if ($key === null) {
             return $this->headers;
