@@ -10,7 +10,10 @@ class RouteCollection
 
     public function add(Route $route): void
     {
-        self::$routes[] = $route;
+        // check si plusieurs method
+        foreach ($route->getMethods() as $method) {
+            self::$routes[$method][] = $route;
+        }
     }
 
     public function all(): array
