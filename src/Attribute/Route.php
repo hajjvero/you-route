@@ -30,12 +30,31 @@ final class Route
      * @param string $path le chemin de la route
      * @param string|array $methods les méthodes de la route
      */
-    public function __construct(string $path,string $name="", string|array $methods="GET")
+    public function __construct(string $path, string $name = "", string|array $methods = "GET")
     {
+        // Normaliser le chemin
+        $this->path = rtrim($path, '/');
+        if ($this->path === '') {
+            $this->path = '/';
+        }
+
         $this->name = $name;
-        $this->path = $path;
-        $this->methods = $methods;
+
+        // Transformer en tableau si string
+        $methods = is_string($methods) ? [$methods] : $methods;
+
+        // Valider les méthodes HTTP
+        $validHttpMethods = ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"];
+
+        foreach ($methods as $method) {
+            if (!in_array(strtoupper($method), $validHttpMethods, true)) {
+                throw new \InvalidArgumentException("Invalid HTTP method: {$method}");
+            }
+        }
+
+        $this->methods = array_map('strtoupper', array_unique($methods));
     }
+
 
     /**
      * @return string
