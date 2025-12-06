@@ -85,7 +85,7 @@ final class Route
      */
     public function getMethods(): array|string
     {
-        return strtoupper($this->methods);
+        return $this->methods;
     }
 
     /**
