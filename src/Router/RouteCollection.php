@@ -11,15 +11,9 @@ class RouteCollection
     public function add(Route $route): void
     {
         // check si plusieurs method
-        if (is_array($route->getMethods()))
-        {
-            foreach ($route->getMethods() as $method) {
-                self::$routes[$method][] = $route;
-            }
-            return;
+        foreach ($route->getMethods() as $method) {
+            self::$routes[$method][] = $route;
         }
-
-        self::$routes[$route->getMethods()][] = $route;
     }
 
     public function all(): array
